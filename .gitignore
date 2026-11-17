@@ -229,3 +229,5 @@ __marimo__/
 # Generated index and private session data
 storage/
 private_sessions/
+
+.venv311/ 

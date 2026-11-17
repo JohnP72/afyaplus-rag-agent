@@ -1,0 +1,6 @@
+langchain
+langchain-openai
+langgraph
+llama-index-core
+llama-index-embeddings-openai
+python-dotenv
