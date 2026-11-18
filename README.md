@@ -171,7 +171,10 @@ Do not use real patient information in demonstrations or screenshots.
 
 ## Validation performed during development
 
-- Seven automated privacy tests passed.
+- All 23 automated tests passed, covering privacy, calculations,
+  tool failures and citation validation.
+- All four live retrieval checks passed: each expected source section
+  appeared among the top three results.
 - The index built 15 chunks from the two demonstration manuals.
 - Retrieval returned the outpatient contribution passage.
 - The agent answered an insurance question with a citation.
@@ -188,7 +191,11 @@ Run the automated tests:
 ```bash
 python -m unittest discover -s tests -v
 ```
+Run the live retrieval checks (requires API access):
 
+```bash
+python -m tests.check_retrieval
+```
 ## Limitations and compliance considerations
 
 This prototype demonstrates selected privacy safeguards relevant to
