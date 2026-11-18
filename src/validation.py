@@ -1,5 +1,5 @@
 """Review masked answers against the current turn's tool evidence."""
-
+import re
 import json
 
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -20,6 +20,34 @@ class AnswerReview(BaseModel):
         description="True only if the answer meets every review rule."
     )
 
+def citations_match_evidence(answer: str, evidence: list[str]) -> bool:
+    """Check that Markdown source citations match retrieved passages."""
+    allowed = set()
+
+    for item in evidence:
+        try:
+            payload = json.loads(item)
+            for passage in payload.get("passages", []):
+                allowed.add((
+                    passage["source"].strip(),
+                    passage["section"].strip(),
+                ))
+        except (ValueError, TypeError, KeyError, AttributeError):
+            return False
+
+    # Inspect every bracketed Markdown filename citation.
+    citations = re.findall(r"\[([^\[\]\n]*\.md[^\[\]\n]*)\]", answer)
+
+    for citation in citations:
+        if "|" not in citation:
+            return False
+
+        source, section = citation.split("|", 1)
+
+        if (source.strip(), section.strip()) not in allowed:
+            return False
+
+    return True
 
 def approve_answer(
     answer: str,
@@ -27,6 +55,9 @@ def approve_answer(
     conversation: list[str] | None = None,
 ) -> str:
     """Return the masked answer only when the evidence review approves it."""
+    if not citations_match_evidence(answer, evidence):
+        return FALLBACK
+
     try:
         reviewer = ChatOpenAI(
             model="gpt-4.1-mini",
