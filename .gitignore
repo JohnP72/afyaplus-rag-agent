@@ -221,3 +221,13 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local environment and private configuration
+.venv/
+.env
+
+# Generated index and private session data
+storage/
+private_sessions/
+
+.venv311/ 
